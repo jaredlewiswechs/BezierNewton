@@ -113,26 +113,27 @@ public final class Invoice: BlueprintObject {
 
     public override func collectForges() -> [ForgeDefinition] {
         [
-            forge("submit") {
+            TinyTalk.forge("submit") {
                 self.$status.moves(to: "submitted")
                 fin
             },
 
-            forge("approve") {
+            TinyTalk.forge("approve") {
                 self.$approved.wrappedValue = true
                 self.$status.moves(to: "approved")
                 fin
             },
 
-            forge("pay") {
+            TinyTalk.forge("pay") {
                 if self.amount > Number(10000) && !self.approved {
-                    return [finfr("Payment over 10000 requires approval")]
+                    finfr("Payment over 10000 requires approval")
+                } else {
+                    self.$status.moves(to: "paid")
+                    fin
                 }
-                self.$status.moves(to: "paid")
-                return [fin]
             },
 
-            forge("set_amount") {
+            TinyTalk.forge("set_amount") {
                 // Amount is set before this forge is called via direct field access
                 fin
             },
@@ -225,7 +226,7 @@ public final class Navigator: BlueprintObject {
 
     public override func collectForges() -> [ForgeDefinition] {
         [
-            forge("move") {
+            TinyTalk.forge("move") {
                 // Target position is set before calling forge
                 fin
             },
