@@ -202,12 +202,19 @@ public struct ForgeResult: Sendable {
 /// ```
 @resultBuilder
 public struct ForgeBuilder {
-    public static func buildBlock(_ actions: ForgeAction...) -> [ForgeAction] {
-        actions
+    /// Absorbs side-effect expressions (e.g. `field.moves(to:)`, assignments)
+    /// that return `Void`. They run for their effects; no action is emitted.
+    public static func buildExpression(_ expression: Void) -> [ForgeAction] {
+        []
     }
 
-    public static func buildBlock(_ actions: [ForgeAction]) -> [ForgeAction] {
-        actions
+    /// Lifts a single `ForgeAction` (e.g. `fin`, `finfr`) into the builder.
+    public static func buildExpression(_ expression: ForgeAction) -> [ForgeAction] {
+        [expression]
+    }
+
+    public static func buildBlock(_ components: [ForgeAction]...) -> [ForgeAction] {
+        components.flatMap { $0 }
     }
 
     public static func buildOptional(_ actions: [ForgeAction]?) -> [ForgeAction] {
